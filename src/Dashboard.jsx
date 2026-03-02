@@ -36,21 +36,31 @@ const currency = (v) => {
 const short = (s, max = 22) =>
   s && s.length > max ? s.slice(0, max) + "…" : s || "";
 
-// ── PDF Report: open in new window and trigger print (user chooses "Save as PDF") ─
+// ── PDF Report: open report in new tab via Blob URL, then trigger print (user chooses "Save as PDF") ─
 function openReportForPDF(html) {
-  const w = window.open("", "_blank", "noopener,noreferrer");
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const w = window.open(url, "_blank", "noopener,noreferrer");
   if (!w) {
+    URL.revokeObjectURL(url);
     alert("Please allow pop-ups for this site to download the report as PDF.");
     return;
   }
-  w.document.write(html);
-  w.document.close();
   const doPrint = () => {
-    w.focus();
-    w.print();
-    w.onafterprint = () => w.close();
+    try {
+      w.focus();
+      w.print();
+    } catch (e) {
+      // Print may fail if user already closed the tab
+    }
+    w.onafterprint = () => {
+      w.close();
+      URL.revokeObjectURL(url);
+    };
+    // Fallback: revoke URL after a delay in case onafterprint doesn't fire
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
   };
-  setTimeout(doPrint, 800);
+  w.addEventListener("load", () => setTimeout(doPrint, 600));
 }
 
 // ── Build full report HTML ─
