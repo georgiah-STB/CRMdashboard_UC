@@ -1,4 +1,4 @@
-# UCOOK CRM Dashboard
+# CRM Dashboard
 
 Upload a CSV export of your email campaigns to view KPIs, charts, and download a PDF report.
 

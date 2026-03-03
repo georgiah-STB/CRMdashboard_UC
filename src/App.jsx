@@ -1,5 +1,5 @@
-import UCOOKDashboard from './Dashboard.jsx';
+import CRMDashboard from './Dashboard.jsx';
 
 export default function App() {
-  return <UCOOKDashboard />;
+  return <CRMDashboard />;
 }
